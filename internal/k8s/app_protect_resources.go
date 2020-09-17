@@ -19,6 +19,11 @@ var appProtectLogConfRequieredFields = [][]string{
 	{"spec", "filter"},
 }
 
+var appProtectUserSigRequieredFields = [][]string{
+	{"spec", "tag"},
+	{"spec", "signatures"},
+}
+
 func validateRequieredFields(policy *unstructured.Unstructured, fieldsList [][]string) error {
 	for _, fields := range fieldsList {
 		field, found, err := unstructured.NestedMap(policy.Object, fields...)
@@ -50,6 +55,17 @@ func ValidateAppProtectLogConf(logConf *unstructured.Unstructured) error {
 	err := validateRequieredFields(logConf, appProtectLogConfRequieredFields)
 	if err != nil {
 		return fmt.Errorf("Error validating App Protect Log Configuration %v: %v", lcName, err)
+	}
+
+	return nil
+}
+
+// ValidateAppProtectUserSig validates UserSignature resource
+func ValidateAppProtectUserSig(logConf *unstructured.Unstructured) error {
+	sigName := userSig.GetName()
+	err := validateRequieredFields(userSig, appProtectUserSigRequieredFields)
+	if err != nil {
+		return fmt.Errorf("Error validating App Protect User Signature %v: %v", sigName, err)
 	}
 
 	return nil

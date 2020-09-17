@@ -487,6 +487,15 @@ func ParseConfigMap(cfgm *v1.ConfigMap, nginxPlus bool, hasAppProtect bool) *Con
 				glog.Error("ConfigMap Key 'app-protect-physical-memory-thresholds' must follow pattern: 'high=<0 - 100> low=<0 - 100>'. Ignoring.")
 			}
 		}
+
+		// DBI: check best delimiter
+		if appProtectUserDefinedSignatures, exists, err := GetMapKeyAsStringSlice(cfgm.Data, "app-protect-user-defined-signatures", cfgm, "\n"); exists {
+			if err != nil {
+				glog.Error(err)
+			} else {
+				cfgParams.MainAppProtectUserSigs = appProtectUserDefinedSignatures
+			}
+		}
 	}
 
 	return cfgParams
@@ -546,9 +555,12 @@ func GenerateNginxMainConfig(staticCfgParams *StaticConfigParams, config *Config
 		AppProtectCookieSeed:               config.MainAppProtectCookieSeed,
 		AppProtectCPUThresholds:            config.MainAppProtectCPUThresholds,
 		AppProtectPhysicalMemoryThresholds: config.MainAppProtectPhysicalMemoryThresholds,
+		AppProtectUserSigs:                 config.MainAppProtectUserSigs,
 		InternalRouteServer:                staticCfgParams.EnableInternalRoutes,
 		InternalRouteServerName:            staticCfgParams.PodName,
 		LatencyMetrics:                     staticCfgParams.EnableLatencyMetrics,
 	}
 	return nginxCfg
 }
+
+func 

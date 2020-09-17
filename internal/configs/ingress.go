@@ -17,6 +17,7 @@ import (
 const emptyHost = ""
 const appProtectPolicyKey = "policy"
 const appProtectLogConfKey = "logconf"
+const appProtectUserSigKey = "usersig"
 
 // IngressEx holds an Ingress along with the resources that are referenced in this Ingress.
 type IngressEx struct {
@@ -30,6 +31,7 @@ type IngressEx struct {
 	AppProtectPolicy  *unstructured.Unstructured
 	AppProtectLogConf *unstructured.Unstructured
 	AppProtectLogDst  string
+	AppProtectUserSig *unstructured.Unstructured
 }
 
 // JWTKey represents a secret that holds JSON Web Key.

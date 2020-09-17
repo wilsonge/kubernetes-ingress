@@ -35,6 +35,7 @@ const pemFileNameForMissingTLSSecret = "/etc/nginx/secrets/default"
 const pemFileNameForWildcardTLSSecret = "/etc/nginx/secrets/wildcard"
 const appProtectPolicyFolder = "/etc/nginx/waf/nac-policies/"
 const appProtectLogConfFolder = "/etc/nginx/waf/nac-logconfs/"
+const appProtectUserSigFolder = "/etc/nginx/waf/nac-usersigs/"
 
 // DefaultServerSecretName is the filename of the Secret with a TLS cert and a key for the default server.
 const DefaultServerSecretName = "default"
@@ -962,7 +963,7 @@ func (cnf *Configurator) updatePlusEndpoints(ingEx *IngressEx) error {
 }
 
 // UpdateConfig updates NGINX configuration parameters.
-func (cnf *Configurator) UpdateConfig(cfgParams *ConfigParams, ingExes []*IngressEx, mergeableIngs map[string]*MergeableIngresses, virtualServerExes []*VirtualServerEx) (Warnings, error) {
+func (cnf *Configurator) UpdateConfig(cfgParams *ConfigParams, ingExes []*IngressEx, mergeableIngs map[string]*MergeableIngresses, virtualServerExes []*VirtualServerEx, userSigs []string) (Warnings, error) {
 	cnf.cfgParams = cfgParams
 	allWarnings := newWarnings()
 
@@ -996,6 +997,8 @@ func (cnf *Configurator) UpdateConfig(cfgParams *ConfigParams, ingExes []*Ingres
 	}
 
 	mainCfg := GenerateNginxMainConfig(cnf.staticCfgParams, cfgParams)
+	//DBI: 
+	mainCfg.AppProtectUserSigs := userSigs 
 	mainCfgContent, err := cnf.templateExecutor.ExecuteMainConfigTemplate(mainCfg)
 	if err != nil {
 		return allWarnings, fmt.Errorf("Error when writing main Config")
@@ -1222,12 +1225,25 @@ func (cnf *Configurator) updateApResources(ingEx *IngressEx) map[string]string {
 	return apRes
 }
 
+// DBI: add user Sigs to conf
+func (cnf *Configurator) addUserSigsToConf(userSig *unstructured.Unstructured) string {
+	userSigFileName := appProtectUserSigFileName(userSig)
+	userSigContent := generateApResourceFileContent(userSig)
+	cnf.nginxManager.CreateAppProtectResourceFile(userSigFileName, userSigContent)
+
+	return userSigFileName
+}
+
 func appProtectPolicyFileNameFromIngEx(ingEx *IngressEx) string {
 	return fmt.Sprintf("%s%s_%s", appProtectPolicyFolder, ingEx.AppProtectPolicy.GetNamespace(), ingEx.AppProtectPolicy.GetName())
 }
 
 func appProtectLogConfFileNameFromIngEx(ingEx *IngressEx) string {
 	return fmt.Sprintf("%s%s_%s", appProtectLogConfFolder, ingEx.AppProtectLogConf.GetNamespace(), ingEx.AppProtectLogConf.GetName())
+}
+
+func appProtectUserSigFileName(apUserSig *unstructured.Unstructured) string {
+	return fmt.Sprintf("%s%s_%s", appProtectUserSigFolder, apUserSig.GetNamespace(), apUserSig.GetName())
 }
 
 func generateApResourceFileContent(apResource *unstructured.Unstructured) []byte {
@@ -1310,6 +1326,16 @@ func (cnf *Configurator) DeleteAppProtectLogConf(logConfNamespaceName string, in
 	if err := cnf.nginxManager.Reload(nginx.ReloadForOtherUpdate); err != nil {
 		return fmt.Errorf("Error when reloading NGINX when removing App Protect Log Configuration: %v", err)
 	}
+
+	return nil
+}
+
+func (cnf *Configurator) DeleteAppProtectUserSig(userSigNamespaceame string) error {
+	fName := strings.Replace(userSigNamespaceame, "/", "_", 1)
+	userSigFileName := appProtectUserSigFolder + fName
+	cnf.nginxManager.DeleteAppProtectResourceFile(userSigFileName)
+
+	// DBI: TODO reload Config
 
 	return nil
 }

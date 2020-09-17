@@ -130,6 +130,8 @@ const (
 	appProtectPolicy
 	// appProtectlogconf resource
 	appProtectLogConf
+	// appProtectUserSig resource
+	appProtectUserSig
 )
 
 // task is an element of a taskQueue
@@ -172,6 +174,8 @@ func newTask(key string, obj interface{}) (task, error) {
 			k = appProtectPolicy
 		} else if objectKind == appProtectLogConfGVK.Kind {
 			k = appProtectLogConf
+		} else if objectKind == appProtectUserSigGVK.Kind {
+			k = appProtectUserSig
 		} else {
 			return task{}, fmt.Errorf("Unknow unstructured kind: %v", objectKind)
 		}

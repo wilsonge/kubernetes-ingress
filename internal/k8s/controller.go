@@ -84,6 +84,16 @@ var (
 		Version: "v1beta1",
 		Kind:    "APLogConf",
 	}
+	appProtectUserSigGVR = schema.GroupVersionResource{
+		Group:    "appprotect.f5.com",
+		Version:  "v1beta1",
+		Resource: "apusersigs",
+	}
+	appProtectUserSigGVK = schema.GroupVersionKind{
+		Group:   "appprotect.f5.com",
+		Version: "v1beta1",
+		Kind:    "APUserSig",
+	}
 )
 
 type podEndpoint struct {
@@ -110,6 +120,7 @@ type LoadBalancerController struct {
 	dynInformerFactory            dynamicinformer.DynamicSharedInformerFactory
 	appProtectPolicyInformer      cache.SharedIndexInformer
 	appProtectLogConfInformer     cache.SharedIndexInformer
+	appProtectUserSigInformer     cache.SharedIndexInformer
 	globalConfigurationController cache.Controller
 	transportServerController     cache.Controller
 	policyController              cache.Controller
@@ -123,7 +134,8 @@ type LoadBalancerController struct {
 	virtualServerRouteLister      cache.Store
 	appProtectPolicyLister        cache.Store
 	appProtectLogConfLister       cache.Store
-	globalConfigurationLister     cache.Store
+	appProtectUserSigLister       cache.Store
+	globalConfiguratonLister      cache.Store
 	transportServerLister         cache.Store
 	policyLister                  cache.Store
 	syncQueue                     *taskQueue
@@ -254,6 +266,7 @@ func NewLoadBalancerController(input NewLoadBalancerControllerInput) *LoadBalanc
 		lbc.dynInformerFactory = dynamicinformer.NewDynamicSharedInformerFactory(lbc.dynClient, 0)
 		lbc.addAppProtectPolicyHandler(createAppProtectPolicyHandlers(lbc))
 		lbc.addAppProtectLogConfHandler(createAppProtectLogConfHandlers(lbc))
+		lbc.addAppProtectUserSigHandler(createAppProtectUserSigHandlers(lbc))
 	}
 
 	if lbc.areCustomResourcesEnabled {
@@ -320,6 +333,13 @@ func (lbc *LoadBalancerController) addAppProtectLogConfHandler(handlers cache.Re
 	lbc.appProtectLogConfInformer = lbc.dynInformerFactory.ForResource(appProtectLogConfGVR).Informer()
 	lbc.appProtectLogConfLister = lbc.appProtectLogConfInformer.GetStore()
 	lbc.appProtectLogConfInformer.AddEventHandler(handlers)
+}
+
+// addappProtectUserSigHandler creates dynamic informer for custom appprotect user defined signature resource
+func (lbc *LoadBalancerController) addAppProtectUserSigHandler(handlers cache.ResourceEventHandlerFuncs) {
+	lbc.appProtectUserSigInformer = lbc.dynInformerFactory.ForResource(appProtectUserSigGVR).Informer()
+	lbc.appProtectUserSigLister = lbc.appProtectUserSigInformer.GetStore()
+	lbc.appProtectUserSigInformer.AddEventHandler(handlers)
 }
 
 // addSecretHandler adds the handler for secrets to the controller
@@ -649,7 +669,9 @@ func (lbc *LoadBalancerController) syncConfig(task task) {
 		}
 	}
 
-	warnings, updateErr := lbc.configurator.UpdateConfig(cfgParams, ingExes, mergeableIngresses, virtualServerExes)
+	confUserSigs := lbc.findActiveAppProtectUserSigsInConfig()
+
+	warnings, updateErr := lbc.configurator.UpdateConfig(cfgParams, ingExes, mergeableIngresses, virtualServerExes, confUserSigs)
 
 	eventTitle := "Updated"
 	eventType := api_v1.EventTypeNormal
@@ -849,6 +871,8 @@ func (lbc *LoadBalancerController) sync(task task) {
 		lbc.syncAppProtectPolicy(task)
 	case appProtectLogConf:
 		lbc.syncAppProtectLogConf(task)
+	case appProtectUserSig:
+		lbc.syncAppProtectUserSig(task)
 	}
 
 	if !lbc.isNginxReady && lbc.syncQueue.Len() == 0 {
@@ -2346,7 +2370,6 @@ func (lbc *LoadBalancerController) createIngress(ing *networking.Ingress) (*conf
 					ingEx.AppProtectPolicy = policy
 				}
 			}
-
 			if apLogConfAntn, exists := ingEx.Ingress.Annotations[configs.AppProtectLogConfAnnotation]; exists {
 				logConf, logDst, err := lbc.getAppProtectLogConfAndDst(ing)
 				if err != nil {
@@ -3463,6 +3486,106 @@ func (lbc *LoadBalancerController) handleAppProtectLogConfDeletion(key string, i
 	return nil
 }
 
+func (lbc *LoadBalancerController) syncAppProtectUserSig(task task) {
+	key := task.Key
+	glog.V(3).Infof("Syncing AppProtectUserSig %v", key)
+	obj, sigExists, err := lbc.appProtectUserSigLister.GetByKey(key)
+	if err != nil {
+		lbc.syncQueue.Requeue(task, err)
+		return
+	}
+
+	namespace, name, err := ParseNamespaceName(key)
+	if err != nil {
+		glog.Warningf("Log Configurtion key %v is invalid: %v", key, err)
+		return
+	}
+
+	if !sigExists {
+		glog.V(3).Infof("Deleting AppProtectUserSig %v", key)
+		err = lbc.handleAppProtectUserSigDeletion(key)
+		if err != nil {
+			glog.Errorf("Error deleting App Protect UserSignature %v: %v", key, err)
+		}
+		lbc.get
+		return
+	}
+
+	userSig := obj.(*unstructured.Unstructured)
+
+	err = ValidateAppProtectUserSig(userSig)
+	if err != nil {
+		err = lbc.handleAppProtectUserSigDeletion(key)
+		if err != nil {
+			glog.Errorf("Error deleting App Protect UserSignature  %v after it failed to validate: %v", key, err)
+		}
+		return
+	}
+	err = lbc.handleAppProtectUserSigUpdate()
+	if err != nil {
+		lbc.recorder.Eventf(userSig, api_v1.EventTypeWarning, "AddedOrUpdatedWithError", "App Protect User Signature %v was added or updated with error: %v", key, err)
+		glog.V(3).Infof("Error adding or updating AppProtectUserSig %v : %v", key, err)
+		return
+	}
+	lbc.recorder.Eventf(userSig, api_v1.EventTypeNormal, "AddedOrUpdated", "AppProtectUserSignature  %v was added or updated", key)
+}
+
+// DBI: TODO don't use ings, add to a list
+func (lbc *LoadBalancerController) handleAppProtectUserSigUpdate() error {
+	// DBI: TODO fix this area up
+	ingresses, mergeableIngresses := lbc.GetManagedIngresses()
+	ingExes := lbc.ingressesToIngressExes(ingresses)
+
+	var virtualServerExes []*configs.VirtualServerEx
+	if lbc.areCustomResourcesEnabled {
+		virtualServers := lbc.getVirtualServers()
+		virtualServerExes = lbc.virtualServersToVirtualServerExes(virtualServers)
+	}
+
+	confUserSigs := lbc.findActiveAppProtectUserSigsInConfig()
+
+	// Update config
+	warnings, updateErr := lbc.configurator.UpdateConfig(lbc.configurator.cfgParams, ingExes, mergeableIngresses, virtualServerExes, confUserSigs)
+
+	lbc.emitEventForIngresses(eventType, title, message, ings)
+	return nil
+
+}
+
+// DBI: 
+func (lbc *LoadBalancerController) handleAppProtectUserSigDeletion(key string) error {
+	eventType := api_v1.EventTypeNormal
+	title := "Updated"
+	message := fmt.Sprintf("Configuration was updated due to deleted App Protect User Signature  %v", key)
+
+	// DBI: remove sig path from config
+	err := lbc.configurator.DeleteAppProtectUserSig(key)
+	if err != nil {
+		eventType = api_v1.EventTypeWarning
+		title = "UpdatedWithError"
+		message = fmt.Sprintf("Configuration was updated due to deleted App Protect User Sig %v, but not applied: %v", key, err)
+		lbc.emitEventForIngresses(eventType, title, message)
+		return err
+	}
+
+	// DBI: TODO fix this area up
+	ingresses, mergeableIngresses := lbc.GetManagedIngresses()
+	ingExes := lbc.ingressesToIngressExes(ingresses)
+
+	var virtualServerExes []*configs.VirtualServerEx
+	if lbc.areCustomResourcesEnabled {
+		virtualServers := lbc.getVirtualServers()
+		virtualServerExes = lbc.virtualServersToVirtualServerExes(virtualServers)
+	}
+
+	confUserSigs := lbc.findActiveAppProtectUserSigsInConfig()
+
+	warnings, updateErr := lbc.configurator.UpdateConfig(lbc.configurator.cfgParams, ingExes, mergeableIngresses, virtualServerExes, confUserSigs)
+
+	lbc.emitEventForIngresses(eventType, title, message, ings)
+	return nil
+}
+
 func (lbc *LoadBalancerController) findIngressesForAppProtectResource(namespace string, name string, annotationRef string) (apIngs []networking.Ingress) {
 	ings, mIngs := lbc.GetManagedIngresses()
 	for i := range ings {
@@ -3480,6 +3603,19 @@ func (lbc *LoadBalancerController) findIngressesForAppProtectResource(namespace 
 		}
 	}
 	return apIngs
+}
+
+//DBI: TODO test config map for sig
+func (lbc *LoadBalancerController) findActiveAppProtectUserSigsInConfig(namespace string, name string) (apConfigUserSigs []string) {
+	configParamsUserSigs := lbc.configurator.cfgParams.MainAppProtectUserSigs 
+	for i := range configParamUserSigs {
+		if obj, exists, err := lbc.appProtectUserSigLister.GetByKey(configParamsUserSigs[i]); exists {
+			userSig := obj.(*unstructured.Unstructured)
+			configUserSig := lbc.configurator.addUserSigsToConf(userSig)
+			apConfigUserSigs = append(apConfigUserSig, configUserSig) // DBI:
+		}
+
+	return apConfigUserSigs
 }
 
 // IsNginxReady returns ready status of NGINX
