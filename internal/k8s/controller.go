@@ -135,7 +135,7 @@ type LoadBalancerController struct {
 	appProtectPolicyLister        cache.Store
 	appProtectLogConfLister       cache.Store
 	appProtectUserSigLister       cache.Store
-	globalConfiguratonLister      cache.Store
+	globalConfigurationLister     cache.Store
 	transportServerLister         cache.Store
 	policyLister                  cache.Store
 	syncQueue                     *taskQueue
@@ -143,6 +143,7 @@ type LoadBalancerController struct {
 	cancel                        context.CancelFunc
 	configurator                  *configs.Configurator
 	watchNginxConfigMaps          bool
+	ConfigMapNsName					string
 	appProtectEnabled             bool
 	watchGlobalConfiguration      bool
 	isNginxPlus                   bool
@@ -290,6 +291,7 @@ func NewLoadBalancerController(input NewLoadBalancerControllerInput) *LoadBalanc
 			glog.Warning(err)
 		} else {
 			lbc.watchNginxConfigMaps = true
+			lbc.ConfigMapNsName = input.ConfigMaps
 			lbc.addConfigMapHandler(createConfigMapHandlers(lbc, nginxConfigMapsName), nginxConfigMapsNS)
 		}
 	}
@@ -3521,7 +3523,7 @@ func (lbc *LoadBalancerController) syncAppProtectUserSig(task task) {
 		}
 		return
 	}
-	err = lbc.handleAppProtectUserSigUpdate()
+	err = lbc.handleAppProtectUserSigUpdate(userSig)
 	if err != nil {
 		lbc.recorder.Eventf(userSig, api_v1.EventTypeWarning, "AddedOrUpdatedWithError", "App Protect User Signature %v was added or updated with error: %v", key, err)
 		glog.V(3).Infof("Error adding or updating AppProtectUserSig %v : %v", key, err)
@@ -3530,7 +3532,34 @@ func (lbc *LoadBalancerController) syncAppProtectUserSig(task task) {
 	lbc.recorder.Eventf(userSig, api_v1.EventTypeNormal, "AddedOrUpdated", "AppProtectUserSignature  %v was added or updated", key)
 }
 
-func (lbc *LoadBalancerController) handleAppProtectUserSigUpdate() error {
+func (lbc *LoadBalancerController) handleAppProtectUserSigUpdate(userSig *unstructured.Unstructured) error {
+	userSigNsName := userSig.GetNamespace() + "/" + userSig.GetName()
+	if lbc.ConfigMapNsName == "" {
+		glog.Warning("Config Map must be enabled to use Nginx App Protect User defined signatures")
+		return nil
+	}
+
+	cmObj, configExists, err := lbc.configMapLister.GetByKey(lbc.ConfigMapNsName)
+	if err != nil {
+		return err
+	}
+	
+	cfgParams := configs.NewDefaultConfigParams()
+
+	if configExists {
+		cfgm := cmObj.(*api_v1.ConfigMap)
+		cfgParams = configs.ParseConfigMap(cfgm, lbc.isNginxPlus, lbc.appProtectEnabled)
+
+		lbc.statusUpdater.SaveStatusFromExternalStatus(cfgm.Data["external-status-address"])
+	}
+	
+	for _, sig := range cfgParams.MainAppProtectUserSigs {
+		if sig == userSigNsName {
+			lbc.syncQueue.Enqueue(cmObj)
+		}
+	}
+
+
 	return nil
 }
 
