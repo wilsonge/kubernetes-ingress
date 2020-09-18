@@ -963,7 +963,7 @@ func (cnf *Configurator) updatePlusEndpoints(ingEx *IngressEx) error {
 }
 
 // UpdateConfig updates NGINX configuration parameters.
-func (cnf *Configurator) UpdateConfig(cfgParams *ConfigParams, ingExes []*IngressEx, mergeableIngs map[string]*MergeableIngresses, virtualServerExes []*VirtualServerEx, userSigs []string) (Warnings, error) {
+func (cnf *Configurator) UpdateConfig(cfgParams *ConfigParams, ingExes []*IngressEx, mergeableIngs map[string]*MergeableIngresses, virtualServerExes []*VirtualServerEx, usersigs []*unstructured.Unstructured) (Warnings, error) {
 	cnf.cfgParams = cfgParams
 	allWarnings := newWarnings()
 
@@ -996,9 +996,16 @@ func (cnf *Configurator) UpdateConfig(cfgParams *ConfigParams, ingExes []*Ingres
 		}
 	}
 
+	appProtectUserSigs := []string{}
+
+	for _, sig := range usersigs {
+		appProtectUserSigs = append(appProtectUserSigs, cnf.addAppProtectUserSigsToConf(sig))
+	}
+	
+	cfgParams.MainAppProtectUserSigs = appProtectUserSigs
+
 	mainCfg := GenerateNginxMainConfig(cnf.staticCfgParams, cfgParams)
-	//DBI: 
-	mainCfg.AppProtectUserSigs := userSigs 
+	
 	mainCfgContent, err := cnf.templateExecutor.ExecuteMainConfigTemplate(mainCfg)
 	if err != nil {
 		return allWarnings, fmt.Errorf("Error when writing main Config")
@@ -1226,7 +1233,7 @@ func (cnf *Configurator) updateApResources(ingEx *IngressEx) map[string]string {
 }
 
 // DBI: add user Sigs to conf
-func (cnf *Configurator) addUserSigsToConf(userSig *unstructured.Unstructured) string {
+func (cnf *Configurator) addAppProtectUserSigsToConf(userSig *unstructured.Unstructured) string {
 	userSigFileName := appProtectUserSigFileName(userSig)
 	userSigContent := generateApResourceFileContent(userSig)
 	cnf.nginxManager.CreateAppProtectResourceFile(userSigFileName, userSigContent)

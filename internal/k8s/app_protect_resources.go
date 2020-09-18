@@ -61,7 +61,7 @@ func ValidateAppProtectLogConf(logConf *unstructured.Unstructured) error {
 }
 
 // ValidateAppProtectUserSig validates UserSignature resource
-func ValidateAppProtectUserSig(logConf *unstructured.Unstructured) error {
+func ValidateAppProtectUserSig(userSig *unstructured.Unstructured) error {
 	sigName := userSig.GetName()
 	err := validateRequieredFields(userSig, appProtectUserSigRequieredFields)
 	if err != nil {

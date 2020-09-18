@@ -647,6 +647,7 @@ func (lbc *LoadBalancerController) syncConfig(task task) {
 		lbc.statusUpdater.SaveStatusFromExternalStatus(cfgm.Data["external-status-address"])
 	}
 
+
 	ingresses, mergeableIngresses := lbc.GetManagedIngresses()
 	ingExes := lbc.ingressesToIngressExes(ingresses)
 
@@ -668,10 +669,14 @@ func (lbc *LoadBalancerController) syncConfig(task task) {
 			}
 		}
 	}
+	
+	apUserSigs := []*unstructured.Unstructured{}
 
-	confUserSigs := lbc.findActiveAppProtectUserSigsInConfig()
-
-	warnings, updateErr := lbc.configurator.UpdateConfig(cfgParams, ingExes, mergeableIngresses, virtualServerExes, confUserSigs)
+	if cfgParams.MainAppProtectUserSigs != nil {
+		apUserSigs = lbc.getAppProtectUserSigs(cfgParams)
+	}
+	
+	warnings, updateErr := lbc.configurator.UpdateConfig(cfgParams, ingExes, mergeableIngresses, virtualServerExes, apUserSigs)
 
 	eventTitle := "Updated"
 	eventType := api_v1.EventTypeNormal
@@ -3495,7 +3500,7 @@ func (lbc *LoadBalancerController) syncAppProtectUserSig(task task) {
 		return
 	}
 
-	namespace, name, err := ParseNamespaceName(key)
+	// namespace, name, err := ParseNamespaceName(key)
 	if err != nil {
 		glog.Warningf("Log Configurtion key %v is invalid: %v", key, err)
 		return
@@ -3503,11 +3508,6 @@ func (lbc *LoadBalancerController) syncAppProtectUserSig(task task) {
 
 	if !sigExists {
 		glog.V(3).Infof("Deleting AppProtectUserSig %v", key)
-		err = lbc.handleAppProtectUserSigDeletion(key)
-		if err != nil {
-			glog.Errorf("Error deleting App Protect UserSignature %v: %v", key, err)
-		}
-		lbc.get
 		return
 	}
 
@@ -3530,59 +3530,12 @@ func (lbc *LoadBalancerController) syncAppProtectUserSig(task task) {
 	lbc.recorder.Eventf(userSig, api_v1.EventTypeNormal, "AddedOrUpdated", "AppProtectUserSignature  %v was added or updated", key)
 }
 
-// DBI: TODO don't use ings, add to a list
 func (lbc *LoadBalancerController) handleAppProtectUserSigUpdate() error {
-	// DBI: TODO fix this area up
-	ingresses, mergeableIngresses := lbc.GetManagedIngresses()
-	ingExes := lbc.ingressesToIngressExes(ingresses)
-
-	var virtualServerExes []*configs.VirtualServerEx
-	if lbc.areCustomResourcesEnabled {
-		virtualServers := lbc.getVirtualServers()
-		virtualServerExes = lbc.virtualServersToVirtualServerExes(virtualServers)
-	}
-
-	confUserSigs := lbc.findActiveAppProtectUserSigsInConfig()
-
-	// Update config
-	warnings, updateErr := lbc.configurator.UpdateConfig(lbc.configurator.cfgParams, ingExes, mergeableIngresses, virtualServerExes, confUserSigs)
-
-	lbc.emitEventForIngresses(eventType, title, message, ings)
 	return nil
-
 }
 
-// DBI: 
 func (lbc *LoadBalancerController) handleAppProtectUserSigDeletion(key string) error {
-	eventType := api_v1.EventTypeNormal
-	title := "Updated"
-	message := fmt.Sprintf("Configuration was updated due to deleted App Protect User Signature  %v", key)
-
-	// DBI: remove sig path from config
-	err := lbc.configurator.DeleteAppProtectUserSig(key)
-	if err != nil {
-		eventType = api_v1.EventTypeWarning
-		title = "UpdatedWithError"
-		message = fmt.Sprintf("Configuration was updated due to deleted App Protect User Sig %v, but not applied: %v", key, err)
-		lbc.emitEventForIngresses(eventType, title, message)
-		return err
-	}
-
-	// DBI: TODO fix this area up
-	ingresses, mergeableIngresses := lbc.GetManagedIngresses()
-	ingExes := lbc.ingressesToIngressExes(ingresses)
-
-	var virtualServerExes []*configs.VirtualServerEx
-	if lbc.areCustomResourcesEnabled {
-		virtualServers := lbc.getVirtualServers()
-		virtualServerExes = lbc.virtualServersToVirtualServerExes(virtualServers)
-	}
-
-	confUserSigs := lbc.findActiveAppProtectUserSigsInConfig()
-
-	warnings, updateErr := lbc.configurator.UpdateConfig(lbc.configurator.cfgParams, ingExes, mergeableIngresses, virtualServerExes, confUserSigs)
-
-	lbc.emitEventForIngresses(eventType, title, message, ings)
+	glog.Warningf("Usersig Deleted %s", key)
 	return nil
 }
 
@@ -3606,15 +3559,16 @@ func (lbc *LoadBalancerController) findIngressesForAppProtectResource(namespace 
 }
 
 //DBI: TODO test config map for sig
-func (lbc *LoadBalancerController) findActiveAppProtectUserSigsInConfig(namespace string, name string) (apConfigUserSigs []string) {
-	configParamsUserSigs := lbc.configurator.cfgParams.MainAppProtectUserSigs 
-	for i := range configParamUserSigs {
-		if obj, exists, err := lbc.appProtectUserSigLister.GetByKey(configParamsUserSigs[i]); exists {
+func (lbc *LoadBalancerController) getAppProtectUserSigs(cfg *configs.ConfigParams) (apConfigUserSigs []*unstructured.Unstructured) {
+	for _, sig := range cfg.MainAppProtectUserSigs {
+		if obj, exists, err := lbc.appProtectUserSigLister.GetByKey(sig); exists {
+			if err != nil {
+				glog.Warningf("failed to retrieve Nginx App Protect User Defined signature %s: %v", sig, err)
+			}
 			userSig := obj.(*unstructured.Unstructured)
-			configUserSig := lbc.configurator.addUserSigsToConf(userSig)
-			apConfigUserSigs = append(apConfigUserSig, configUserSig) // DBI:
+			apConfigUserSigs = append(apConfigUserSigs, userSig)
 		}
-
+	}
 	return apConfigUserSigs
 }
 

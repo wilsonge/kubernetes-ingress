@@ -63,6 +63,7 @@ http {
     {{if .AppProtectCookieSeed}}app_protect_cookie_seed {{.AppProtectCookieSeed}};{{end}}
     {{if .AppProtectCPUThresholds}}app_protect_cpu_thresholds {{.AppProtectCPUThresholds}};{{end}}
     {{if .AppProtectPhysicalMemoryThresholds}}app_protect_physical_memory_util_thresholds {{.AppProtectPhysicalMemoryThresholds}};{{end}}
+    {{range .AppProtectUserSigs}}{{app_protect_user_defined_signatures . ;}}{{end}}
     {{- end}}
     sendfile        on;
     #tcp_nopush     on;

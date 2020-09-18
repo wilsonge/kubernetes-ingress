@@ -488,10 +488,9 @@ func ParseConfigMap(cfgm *v1.ConfigMap, nginxPlus bool, hasAppProtect bool) *Con
 			}
 		}
 
-		// DBI: check best delimiter
-		if appProtectUserDefinedSignatures, exists, err := GetMapKeyAsStringSlice(cfgm.Data, "app-protect-user-defined-signatures", cfgm, "\n"); exists {
+		if appProtectUserDefinedSignatures, exists, err := GetMapKeyAsStringSlice(cfgm.Data, "app-protect-user-defined-signatures", cfgm, ","); exists {
 			if err != nil {
-				glog.Error(err)
+				glog.Errorf("Error parsing Nginx App Protect User Defined Signatues: %v", err)
 			} else {
 				cfgParams.MainAppProtectUserSigs = appProtectUserDefinedSignatures
 			}
@@ -562,5 +561,3 @@ func GenerateNginxMainConfig(staticCfgParams *StaticConfigParams, config *Config
 	}
 	return nginxCfg
 }
-
-func 
