@@ -999,7 +999,7 @@ func (cnf *Configurator) UpdateConfig(cfgParams *ConfigParams, ingExes []*Ingres
 	appProtectUserSigs := []string{}
 
 	for _, sig := range usersigs {
-		appProtectUserSigs = append(appProtectUserSigs, cnf.addAppProtectUserSigsToConf(sig))
+		appProtectUserSigs = append(appProtectUserSigs, cnf.writeAppProtectUserSigsFiles(sig))
 	}
 	
 	cfgParams.MainAppProtectUserSigs = appProtectUserSigs
@@ -1232,8 +1232,30 @@ func (cnf *Configurator) updateApResources(ingEx *IngressEx) map[string]string {
 	return apRes
 }
 
-// DBI: add user Sigs to conf
-func (cnf *Configurator) addAppProtectUserSigsToConf(userSig *unstructured.Unstructured) string {
+func (cnf *Configurator) ResyncAppProtectUserSigsInConfig(cfg *ConfigParams, userSigs []*unstructured.Unstructured) error {
+	appProtectUserSigs := []string{}
+
+	for _, sig := range userSigs {
+		appProtectUserSigs = append(appProtectUserSigs, cnf.writeAppProtectUserSigsFiles(sig))
+	}
+	
+	cfg.MainAppProtectUserSigs = appProtectUserSigs
+	cnf.cfgParams = cfg
+	mainCfg := GenerateNginxMainConfig(cnf.staticCfgParams, cfg)
+	
+	mainCfgContent, err := cnf.templateExecutor.ExecuteMainConfigTemplate(mainCfg)
+	if err != nil {
+		return fmt.Errorf("Error when writing main Config When syncing App Protect User Defined Signatures")
+	}
+	cnf.nginxManager.CreateMainConfig(mainCfgContent)
+
+	if err := cnf.nginxManager.Reload(nginx.ReloadForOtherUpdate); err != nil {
+		return fmt.Errorf("Error when When syncing App Protect User Defined Signatures: %v", err)
+	}
+	return nil
+}
+
+func (cnf *Configurator) writeAppProtectUserSigsFiles(userSig *unstructured.Unstructured) string {
 	userSigFileName := appProtectUserSigFileName(userSig)
 	userSigContent := generateApResourceFileContent(userSig)
 	cnf.nginxManager.CreateAppProtectResourceFile(userSigFileName, userSigContent)
@@ -1337,14 +1359,10 @@ func (cnf *Configurator) DeleteAppProtectLogConf(logConfNamespaceName string, in
 	return nil
 }
 
-func (cnf *Configurator) DeleteAppProtectUserSig(userSigNamespaceame string) error {
+func (cnf *Configurator) DeleteAppProtectUserSig(userSigNamespaceame string){
 	fName := strings.Replace(userSigNamespaceame, "/", "_", 1)
 	userSigFileName := appProtectUserSigFolder + fName
 	cnf.nginxManager.DeleteAppProtectResourceFile(userSigFileName)
-
-	// DBI: TODO reload Config
-
-	return nil
 }
 
 // AddInternalRouteConfig adds internal route server to NGINX Configuration and

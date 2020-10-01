@@ -673,9 +673,8 @@ func (lbc *LoadBalancerController) syncConfig(task task) {
 	}
 	
 	apUserSigs := []*unstructured.Unstructured{}
-
 	if cfgParams.MainAppProtectUserSigs != nil {
-		apUserSigs = lbc.getAppProtectUserSigs(cfgParams)
+		apUserSigs = lbc.getAppProtectUserSigsForConfig(cfgParams.MainAppProtectUserSigs)
 	}
 	
 	warnings, updateErr := lbc.configurator.UpdateConfig(cfgParams, ingExes, mergeableIngresses, virtualServerExes, apUserSigs)
@@ -3510,6 +3509,10 @@ func (lbc *LoadBalancerController) syncAppProtectUserSig(task task) {
 
 	if !sigExists {
 		glog.V(3).Infof("Deleting AppProtectUserSig %v", key)
+		err = lbc.handleAppProtectUserSigDeletion(key)
+		if err != nil {
+			glog.Errorf("Error deleting App Protect UserSignature  %v", err)
+		}
 		return
 	}
 
@@ -3544,29 +3547,54 @@ func (lbc *LoadBalancerController) handleAppProtectUserSigUpdate(userSig *unstru
 		return err
 	}
 	
-	cfgParams := configs.NewDefaultConfigParams()
-
 	if configExists {
 		cfgm := cmObj.(*api_v1.ConfigMap)
-		cfgParams = configs.ParseConfigMap(cfgm, lbc.isNginxPlus, lbc.appProtectEnabled)
+		cfgParams := configs.ParseConfigMap(cfgm, lbc.isNginxPlus, lbc.appProtectEnabled)
 
 		lbc.statusUpdater.SaveStatusFromExternalStatus(cfgm.Data["external-status-address"])
-	}
 	
-	for _, sig := range cfgParams.MainAppProtectUserSigs {
-		if sig == userSigNsName {
-			lbc.syncQueue.Enqueue(cmObj)
+		for _, sig := range cfgParams.MainAppProtectUserSigs {
+			if sig == userSigNsName {
+				userSigs := lbc.getAppProtectUserSigsForConfig(cfgParams.MainAppProtectUserSigs)
+				err := lbc.configurator.ResyncAppProtectUserSigsInConfig(cfgParams, userSigs)
+				if err != nil {
+					return err
+				}
+			}
 		}
-	}
-
-
+	}	
 	return nil
 }
 
 func (lbc *LoadBalancerController) handleAppProtectUserSigDeletion(key string) error {
-	glog.Warningf("Usersig Deleted %s", key)
+	lbc.configurator.DeleteAppProtectUserSig(key)
+	if lbc.ConfigMapNsName == "" {
+		glog.Warning("Config Map must be enabled to use Nginx App Protect User defined signatures")
+		return nil
+	}
+	cmObj, configExists, err := lbc.configMapLister.GetByKey(lbc.ConfigMapNsName)
+	if err != nil {
+		return err
+	}
+	if configExists {
+		cfgm := cmObj.(*api_v1.ConfigMap)
+		cfgParams := configs.ParseConfigMap(cfgm, lbc.isNginxPlus, lbc.appProtectEnabled)
+
+		lbc.statusUpdater.SaveStatusFromExternalStatus(cfgm.Data["external-status-address"])
+	
+		for _, sig := range cfgParams.MainAppProtectUserSigs {
+			if sig == key {
+				userSigs := lbc.getAppProtectUserSigsForConfig(cfgParams.MainAppProtectUserSigs)
+				err := lbc.configurator.ResyncAppProtectUserSigsInConfig(cfgParams, userSigs)
+				if err != nil {
+					return err
+				}
+			}
+		}
+	}		
 	return nil
 }
+
 
 func (lbc *LoadBalancerController) findIngressesForAppProtectResource(namespace string, name string, annotationRef string) (apIngs []networking.Ingress) {
 	ings, mIngs := lbc.GetManagedIngresses()
@@ -3587,15 +3615,13 @@ func (lbc *LoadBalancerController) findIngressesForAppProtectResource(namespace 
 	return apIngs
 }
 
-//DBI: TODO test config map for sig
-func (lbc *LoadBalancerController) getAppProtectUserSigs(cfg *configs.ConfigParams) (apConfigUserSigs []*unstructured.Unstructured) {
-	for _, sig := range cfg.MainAppProtectUserSigs {
+func (lbc *LoadBalancerController) getAppProtectUserSigsForConfig(sigs []string) (apConfigUserSigs []*unstructured.Unstructured) {
+	for _, sig := range sigs {
 		if obj, exists, err := lbc.appProtectUserSigLister.GetByKey(sig); exists {
 			if err != nil {
 				glog.Warningf("failed to retrieve Nginx App Protect User Defined signature %s: %v", sig, err)
 			}
-			userSig := obj.(*unstructured.Unstructured)
-			apConfigUserSigs = append(apConfigUserSigs, userSig)
+			apConfigUserSigs = append(apConfigUserSigs, obj.(*unstructured.Unstructured))
 		}
 	}
 	return apConfigUserSigs
