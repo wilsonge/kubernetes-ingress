@@ -10,6 +10,49 @@ import (
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 )
 
+
+
+var dataProfilesIntMin = 0
+var dataProfilesIntMax = 2147483647
+var dataProfilesAllowedStr = "any"
+
+var jsonprofilesSlicePath = []string{"spec","policy","json-profiles"}
+var jsonprofilesPaths = [][]string{
+	{"defenseAttributes","maximumArrayLength"},
+	{"defenseAttributes","maximumStructureDepth"},
+	{"defenseAttributes","maximumTotalLengthOfJSONData"},
+	{"defenseAttributes","maximumValueLength"},
+}
+
+var xMLProfilesSlicePath = []string{"spec","policy","xml-profiles"}
+var xMLProfilesPaths = [][]string{
+	{"defenseAttributes","maximumAttributeValueLength"},
+	{"defenseAttributes","maximumAttributesPerElement"},
+	{"defenseAttributes","maximumChildrenPerElement"},
+	{"defenseAttributes","maximumDocumentDepth"},
+	{"defenseAttributes","maximumDocumentSize"},
+	{"defenseAttributes","maximumElements"},
+	{"defenseAttributes","maximumNSDeclarations"},
+	{"defenseAttributes","maximumNameLength"},
+	{"defenseAttributes","maximumNamespaceLength"},
+} 
+
+var maximumHeaderLengthIntMin = 1
+var maximumHeaderLengthIntMax = 65536
+var maximumHeaderLengthAllowedStr = "any"
+
+var maximumHTTPHeaderLengthPath = []string{"spec","policy","header-settings","maximumHttpHeaderLength"}
+
+var maximumCookieHeaderLengthPath = []string{"spec","policy","cookie-settings","maximumCookieHeaderLength"}
+
+var scoreThresholdIntMin = 0
+var scoreThresholdIntMax = 150
+var scoreThresholdAllowedStr = "default"
+var scoreThresholdAllowedSlicePath = []string{"spec","policy","bot-defense","mitigations","anomalies"}
+var scoreThresholdAllowedPaths = [][]string{
+	{"scoreThreshold"},
+}
+
 var appProtectPolicyRequiredFields = [][]string{
 	{"spec", "policy"},
 }
@@ -68,10 +111,81 @@ func ValidateAppProtectPolicy(policy *unstructured.Unstructured) error {
 
 	err := validateRequiredFields(policy, appProtectPolicyRequiredFields)
 	if err != nil {
-		return fmt.Errorf("Error validating App Protect Policy %v: %v", polName, err)
+		return fmt.Errorf("Error validating App Protect Policy %s: %v", polName, err)
 	}
 
 	return nil
+}
+
+func validateIntOrStringFields(policy *unstructured.Unstructured) error {	
+	err := validateIntorStringFieldsInSlice(policy.Object, jsonprofilesSlicePath, jsonprofilesPaths, dataProfilesAllowedStr, dataProfilesIntMin, dataProfilesIntMax)
+	if err != nil {
+		return err
+	}
+	err = validateIntorStringFieldsInSlice(policy.Object, xMLProfilesSlicePath, xMLProfilesPaths, dataProfilesAllowedStr, dataProfilesIntMin, dataProfilesIntMax)
+	if err != nil {
+		return err
+	}
+	err = validateIntorStringFieldsInSlice(policy.Object, scoreThresholdAllowedSlicePath, scoreThresholdAllowedPaths, scoreThresholdAllowedStr, scoreThresholdIntMin, scoreThresholdIntMax)
+		if err != nil {
+		return err
+		}	
+	err = validateIntOrStringFieldInMap(policy.Object, maximumHTTPHeaderLengthPath, maximumHeaderLengthAllowedStr, maximumHeaderLengthIntMin, maximumHeaderLengthIntMax)
+	if err != nil {
+		return err
+	}
+	err = validateIntOrStringFieldInMap(policy.Object, maximumCookieHeaderLengthPath, maximumHeaderLengthAllowedStr, maximumHeaderLengthIntMin, maximumHeaderLengthIntMax)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func validateIntorStringFieldsInSlice(fieldMap map[string]interface{}, slicePath []string, fieldPaths [][]string, allowedStrVal string, intMin, intMax int) error {
+	policySlice, present, err := unstructured.NestedSlice(fieldMap, slicePath...)
+	if err != nil {
+		return fmt.Errorf("Error retrieving slice %s: %v", slicePath[len(slicePath)-1], err)
+	}
+	if present {
+		for _, policySliceMap := range policySlice {
+			for _, path := range fieldPaths {
+				err = validateIntOrStringFieldInMap(policySliceMap.(map[string]interface{}), path, allowedStrVal, intMin, intMax)
+				if err != nil {
+					return err
+				}
+			}
+		}
+	}
+	return nil
+}
+
+func validateIntOrStringFieldInMap(fieldMap map[string]interface{} , fieldPath []string, allowedStrVal string, intMin, intMax int) error {
+	policyField, present, err := unstructured.NestedFieldNoCopy(fieldMap, fieldPath...)
+	if err != nil {
+		return fmt.Errorf("Error retrieving field %s : %v", fieldPath[len(fieldPath)-1], err)
+	}
+	if present {
+		valid, err := validateIntOrStringField(policyField, allowedStrVal, intMin, intMax)
+		if err != nil {
+			return fmt.Errorf("Error validating field %s : %v", fieldPath[len(fieldPath)-1], err)
+		}
+		if ! valid {
+			return fmt.Errorf("Error validating field %s : field must be string == \"%s\" or %d < int < %d", fieldPath[len(fieldPath)-1], allowedStrVal, intMin, intMax)
+		}
+	}
+	return nil
+}
+
+func validateIntOrStringField(field interface{}, allowedStrVal string, intMin, intMax int) (bool, error) {
+	switch f := field.(type) {
+	case int:
+		return (f > intMin && f < intMax), nil
+	case string:
+		return f == allowedStrVal, nil
+	default:
+		return false, fmt.Errorf("Unsupported type")
+	}
 }
 
 // ValidateAppProtectLogConf validates LogConfiguration resource
