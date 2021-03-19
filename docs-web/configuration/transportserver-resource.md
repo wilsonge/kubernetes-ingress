@@ -236,6 +236,9 @@ healthCheck:
   fails: 5
   passes: 5
   port: 8080
+  match:
+    send: "GET / HTTP/1.0\r\nHost: localhost\r\n\r\n"
+    expect: "200 OK"
 ```
 
 Note: This feature is supported only in NGINX Plus.
@@ -275,6 +278,10 @@ Note: This feature is supported only in NGINX Plus.
    * - ``port``
      - The port used for health check requests. By default, the port of the upstream is used. Note: in contrast with the port of the upstream, this port is not a service port, but a port of a pod.
      - ``integer``
+     - No
+   * - ``match``
+     - Match is used to control the data to send and the response to expect for the healthcheck. See `match <https://nginx.org/en/docs/stream/ngx_stream_upstream_hc_module.html#match>`_ for details.
+     - ``struct``
      - No
 ```
 

@@ -150,6 +150,15 @@ func generateTransportServerHealthCheck(upstreamHealthCheckName string, upstream
 			if u.HealthCheck.Port > 0 {
 				hc.Port = u.HealthCheck.Port
 			}
+
+			if u.HealthCheck.Match != nil {
+				hc.Match = &version2.Match{
+					// We generate the name as there is only one match block for this HealthCheck.
+					Name:   "match_" + u.Name,
+					Send:   u.HealthCheck.Match.Send,
+					Expect: u.HealthCheck.Match.Expect,
+				}
+			}
 		}
 	}
 	return hc
@@ -164,6 +173,7 @@ func generateTransportServerHealthCheckWithDefaults(up conf_v1alpha1.Upstream) *
 		Interval: "5s",
 		Passes:   1,
 		Fails:    1,
+		Match:    nil,
 	}
 }
 

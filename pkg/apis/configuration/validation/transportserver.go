@@ -275,6 +275,44 @@ func validateTSUpstreamHealthChecks(hc *v1alpha1.HealthCheck, fieldPath *field.P
 		}
 	}
 
+	allErrs = append(allErrs, validateHealthCheckMatch(hc.Match, fieldPath.Child("match"))...)
+
+	return allErrs
+}
+
+func validateHealthCheckMatch(match *v1alpha1.Match, fieldPath *field.Path) field.ErrorList {
+	allErrs := field.ErrorList{}
+	if match == nil {
+		return allErrs
+	}
+	allErrs = append(allErrs, validateMatchExpect(match.Expect, fieldPath.Child("expect"))...)
+	allErrs = append(allErrs, validateMatchSend(match.Expect, fieldPath.Child("send"))...)
+	return allErrs
+}
+
+func validateMatchExpect(expect string, fieldPath *field.Path) field.ErrorList {
+	allErrs := field.ErrorList{}
+	if expect == "" {
+		return allErrs
+	}
+	if !escapedStringsFmtRegexp.MatchString(expect) {
+		msg := validation.RegexError(escapedStringsErrMsg, escapedStringsFmt)
+		return append(allErrs, field.Invalid(fieldPath, expect, msg))
+	}
+
+	return allErrs
+}
+
+func validateMatchSend(send string, fieldPath *field.Path) field.ErrorList {
+	allErrs := field.ErrorList{}
+	if send == "" {
+		return allErrs
+	}
+	if !escapedStringsFmtRegexp.MatchString(send) {
+		msg := validation.RegexError(escapedStringsErrMsg, escapedStringsFmt)
+		return append(allErrs, field.Invalid(fieldPath, send, msg))
+	}
+
 	return allErrs
 }
 

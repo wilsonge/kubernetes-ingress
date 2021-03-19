@@ -16,6 +16,17 @@ upstream {{ $u.Name }} {
 {{- $snippet }}
 {{ end }}
 
+{{ if $s.HealthCheck.Match }}
+match {{ $s.HealthCheck.Match.Name }} {
+    {{ if $s.HealthCheck.Match.Send }}
+    send {{ $s.HealthCheck.Match.Send }};
+    {{ end }}
+    {{ if $s.HealthCheck.Match.Expect }}
+    expect {{ $s.HealthCheck.Match.Expect }};
+    {{ end }}
+}
+{{ end }}
+
 {{ $s := .Server }}
 server {
     {{ if $s.TLSPassthrough }}
@@ -42,7 +53,7 @@ server {
 
     {{ if $s.HealthCheck }}
     health_check interval={{ $s.HealthCheck.Interval }} port={{ $s.HealthCheck.Port }} 
-        passes={{ $s.HealthCheck.Passes }} jitter={{ $s.HealthCheck.Jitter }} fails={{ $s.HealthCheck.Fails }} {{ if $s.UDP }}udp{{ end }};
+        passes={{ $s.HealthCheck.Passes }} jitter={{ $s.HealthCheck.Jitter }} fails={{ $s.HealthCheck.Fails }} {{ if $s.UDP }}udp{{ end }} {{ if $s.HealthCheck.Match }}match=$s.HealthCheck.Match.Name{{ end }};
     health_check_timeout {{ $s.HealthCheck.Timeout }};
     {{ end }}
 

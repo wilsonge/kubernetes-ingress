@@ -109,6 +109,13 @@ spec:
                             type: string
                           jitter:
                             type: string
+                          match:
+                            type: object
+                            properties:
+                              expect:
+                                type: string
+                              send:
+                                type: string
                           passes:
                             type: integer
                           port:

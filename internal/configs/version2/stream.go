@@ -53,6 +53,13 @@ type StreamHealthCheck struct {
 	Jitter   string
 	Fails    int
 	Timeout  string
+	Match    *Match
+}
+
+type Match struct {
+	Name   string
+	Expect string
+	Send   string
 }
 
 // TLSPassthroughHostsConfig defines a mapping between TLS Passthrough hosts and the corresponding unix sockets.
