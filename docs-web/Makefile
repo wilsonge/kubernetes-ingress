@@ -10,8 +10,8 @@ clean:
 	rm -rf ${SITE_ROOT}
 
 setup:
-	python -m pip install https://github.com/jputrino/nginx-sphinx/archive/refs/heads/master.zip
-	python -m pip install sphinx==3.5.4
+	python -m pip install git+https://github.com/jputrino/nginx-sphinx.git
+	python -m pip install sphinx==3.5.5
 	
 preview-setup:
 	cp ${NETLIFY_ROOT}/docs-web/_static/dev-home.txt ${NETLIFY_ROOT}/docs-web/index.rst
