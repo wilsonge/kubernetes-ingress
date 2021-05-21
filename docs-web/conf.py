@@ -61,10 +61,10 @@ html_theme = 'nginx_sphinx'
 # Add any paths that contain custom themes here, relative to this directory.
 html_theme_path = nginx_sphinx.get_html_theme_path()
 
-html_baseurl = 'https://docs.nginx.com/'
+html_baseurl = 'https://docs.nginx.com/nginx-ingress-controller/'
 
 html_theme_options = {
-  #'base_url': html_baseurl    
+      
 }
 
 # Add any paths that contain custom static files (such as style sheets) here,
