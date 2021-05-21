@@ -11,7 +11,7 @@ clean:
 
 setup:
 	python -m pip install git+https://github.com/jputrino/nginx-sphinx.git
-	python -m pip install sphinx==3.5.5
+	python -m pip install sphinx==3.5.4
 	
 preview-setup:
 	cp ${NETLIFY_ROOT}/docs-web/_static/dev-home.txt ${NETLIFY_ROOT}/docs-web/index.rst
