@@ -1,0 +1,5 @@
+[build]
+  command = "make production"
+
+[build.deploy-preview]
+  command = "make preview"
