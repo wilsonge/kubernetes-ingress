@@ -1,2 +1,0 @@
-git@git+https://github.com/jputrino/nginx-sphinx.git
-sphinx==3.5.4

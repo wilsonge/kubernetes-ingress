@@ -10,7 +10,7 @@ clean:
 	rm -rf ${SITE_ROOT}
 
 setup:
-	python -m pip install https://github.com/jputrino/nginx-sphinx/blob/master/dist/nginx_sphinx-2.0.0.tar.gz
+	python -m pip install https://github.com/jputrino/nginx-sphinx/archive/refs/heads/master.zip
 	python -m pip install sphinx==3.5.4
 	
 preview-setup:
