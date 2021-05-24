@@ -1,10 +1,13 @@
 ---
 title: Overview
+
 description: Overview of the NGINX Ingress Controller
 weight: 100
 doctypes: [""]
 toc: true
 ---
+
+
 
 The NGINX Ingress Controller an implementation of a Kubernetes Ingress controller for NGINX and NGINX Plus. 
 
