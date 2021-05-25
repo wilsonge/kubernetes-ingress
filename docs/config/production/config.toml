@@ -1,5 +1,6 @@
-baseURL = "https://docs.nginx.com/"
+baseURL = "/nginx-ingress-controller/"
 title = "NGINX Ingress Controller Documentation"
+publishDir = "public/nginx-ingress-controller"
 canonifyURLs = false
 
 [privacy]

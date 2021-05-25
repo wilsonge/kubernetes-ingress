@@ -1,5 +1,5 @@
-baseURL = "https://docs-dev.nginx.com/nginx-ingress-controller/"
-title = "DEV -- NGINX Ingress Controller Docs"
+baseURL = "/nginx-ingress-controller/"
+title = "DEV -- NGINX Docs"
 publishDir = "public/nginx-ingress-controller"
 canonifyURLs = false
 
