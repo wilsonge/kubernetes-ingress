@@ -1,9 +1,9 @@
-title = "NGINX Ingress Controller"
+title = "NGINX Ingress Controller Documentation"
 baseURL = "/"
 enableGitInfo = false
 staticDir = ["static"]
 languageCode = "en-us"
-description = "NGINX Ingress Controller"
+description = "Enterprise-grade Ingress load balancing on Kubernetes platforms."
 refLinksErrorLevel = "ERROR"
 enableRobotsTXT = "true"
 canonifyURLs = true

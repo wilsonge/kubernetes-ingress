@@ -1,6 +1,5 @@
-baseURL = "/nginx/"
-publishDir = "/nginx-docs/"
-title = "NGINX Plus"
+baseURL = "https://docs.nginx.com/"
+title = "NGINX Ingress Controller Documentation"
 canonifyURLs = false
 
 [privacy]

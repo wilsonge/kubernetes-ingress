@@ -1,7 +1,3 @@
-baseURL = "/nginx/"
-publishDir = "/nginx-docs/"
-title = "NGINX Plus"
+baseURL = "/nginx-ingress-controller/"
+title = "STAGING -- NGINX Ingress Controller Docs"
 canonifyURLs = false
-
-[Params]
-  buildtype = "webdocs"

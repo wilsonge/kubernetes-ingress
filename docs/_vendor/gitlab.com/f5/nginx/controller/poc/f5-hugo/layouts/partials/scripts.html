@@ -1,0 +1,27 @@
+{{/* if .Site.IsServer */}}
+  <!--script src="{{/* $js.RelPermalink */}}"></script-->
+{{/* else */}}
+  {{/* $js := $js | minify | fingerprint "sha512" */}}
+  <!-- script src="{{/* $js.RelPermalink */}}" type="text/javascript"></script-->
+{{/* end */}}
+
+<!-- Load Bootstrap -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-Piv4xVNRyMGpqkS2by6br4gNJ7DXjqk09RmUpJ8jgGtD7zP9yug3goQfGII0yAns" crossorigin="anonymous"></script>
+
+{{ $kubejs := resources.Get "/js/kube.js" }}
+{{ $nginxjs := resources.Get "/js/docs-nginx-com/main.js" }}
+
+<script src="{{ $kubejs.RelPermalink }}"></script>
+<script src="{{ $nginxjs.RelPermalink }}"></script>
+
+<!-- Load the Redoc resources if we're not using Dev Portal for the API reference layout-->
+{{ if not ( eq .Site.Params.useDevPortal true ) }}
+
+  {{ $redoc := resources.Get "js/redoc.standalone.js" }}
+  {{ $redoc := $redoc | fingerprint "sha512" }}
+  
+  <!-- only load the redoc js if we're on an api reference page -->
+  {{ if and (in .Params.doctypes "reference") (in .Params.tags "api") }}    
+  <script src="{{$redoc.RelPermalink}}" type="text/javascript"></script>
+  {{ end }}
+{{ end }}

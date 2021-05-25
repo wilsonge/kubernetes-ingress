@@ -1,0 +1,13 @@
+{{ block "sidebar" . }}
+  {{ if and (gt .WordCount 200 ) (.Params.toc) }}
+  <div class="col-md-4 col-xl-4 py-md-3 pl-md-5 bd-sidebar bg-md-gray">
+    <!-- Placeholder for search box at top of sidebar <form role="search" class="bd-search d-flex align-items-center">
+    </form-->
+    <div class="collapse d-md-block row" id="bd-docs-nav">
+      {{ partial "toc.html" . }}
+    </div> 
+  </div>
+  {{ else }}
+  <div class="col-md-2 col-xl-2 py-md-3 pl-md-5" aria-label="toc-placeholder"></div>
+  {{ end }}
+{{ end }}

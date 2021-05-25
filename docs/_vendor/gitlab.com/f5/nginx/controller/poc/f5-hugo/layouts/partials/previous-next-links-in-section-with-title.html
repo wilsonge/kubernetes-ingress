@@ -1,0 +1,18 @@
+{{ if or .PrevInSection .NextInSection }}
+{{/* this div holds these a tags as a unit for flex-box display */}}
+	
+<div>
+	<ul style="display: flex; list-style-type:none; margin-left: -8px;">
+
+		{{if .NextInSection}}
+		
+		<li style="flex:1; text-align: left; white-space: nowrap;"><a href="{{.NextInSection.Permalink }}" class="br2 db f6 ph2 pv2 bg-light-gray white" title="{{ .NextInSection.Title }} ">{{ partial "svg/ic_chevron_left_black_24px.svg" (dict "fill" "#fff" "size" "12px") }} Previous</a></li>
+		{{end}}
+
+		{{if .PrevInSection}}
+			<li style="flex:1; text-align: right; white-space: nowrap;"><a href="{{ .PrevInSection.Permalink }}" class="br2 db f6 pr1 mt3 bg-light-gray ph2 pv2 white" title="{{ .PrevInSection.Title }}">
+			Next {{ partial "svg/ic_chevron_right_black_24px.svg" (dict "fill" "#fff" "size" "12px") }}</a></li>
+		{{end}}
+		</ul>
+	</div>
+{{ end }}

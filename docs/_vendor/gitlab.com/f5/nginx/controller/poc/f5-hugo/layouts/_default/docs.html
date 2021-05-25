@@ -1,0 +1,43 @@
+{{ define "main" }}
+  <div class="row flex-xl-nowrap content">
+    {{ partial "sidebar.html" . }}
+
+  
+  <main class="col-md-8 col-xl-8 py-md-3 pl-md-5 bd-content content" role="main">
+  
+    <div class="d-md-flex align-items-center justify-content-between">
+
+      {{ if .GitInfo }}
+      <a class="btn btn-sm btn-bd-light my-2 my-md-0" href="#" title="View and edit this file on GitHub" target="_blank" rel="noopener">View on GitHub</a>
+      {{ end }}
+      
+      <h1 class="bd-title">{{ .Title}}</h1>
+        {{ if eq .Page.Draft true }}
+          {{ partial "draft-badge.html" . }}
+        {{ end }}
+        {{ if .Description }}
+          <p class="bd-lead">{{ .Description | markdownify }}</p>
+        {{ end}}
+        {{ if in .Params.doctypes "beta" }}
+          {{ partial "beta-badge" . }}
+        {{ end }}
+      </div>
+    
+      {{ .Content }}
+
+
+
+
+    {{ partial "previous-next-links-in-section-with-title.html" . }}
+
+    {{ partial "version-list" . }}
+  </div>
+  </main>
+
+<!-- If there is a script defined in the page metadata, load it  -->
+{{if .Params.script}}
+  {{ $script := (delimit (slice "scripts" .Params.script) "/")}}
+  {{ partial (string $script) .}}
+{{end }}
+
+{{ end }}
