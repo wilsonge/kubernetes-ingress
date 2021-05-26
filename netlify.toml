@@ -1,7 +1,7 @@
 [build]
   base = "docs/"
   publish = "public"
-  command = "make hugo-build"
+  command = "make hugo build"
 
 [build.environment]
   HUGO_VERSION = "0.80.0"
