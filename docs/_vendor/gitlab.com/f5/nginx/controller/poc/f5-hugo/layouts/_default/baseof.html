@@ -20,18 +20,18 @@
 
   {{ partial "load_jquery.html" . }}
 
-  {{/* if not .Site.IsServer */}} 
+  {{ if ne .Site.IsServer "true" }} {{ else if ne .Site.Params.buildtype "package" }} 
     <!-- GDPR Section Start -->
     {{ partial "gdpr2.html" . }}
     <!-- GDPR Section End -->
-  {{/* end */}}
+  {{ end }}
 
 {{ end }}
 
 </head>
 
 <body>
-  {{ if not .Site.IsServer }} 
+  {{ if ne .Site.IsServer "true" }} {{ else if ne .Site.Params.buildtype "package" }}  
     {{ partial "gtm.html" . }}
   {{ end }}
 
@@ -44,6 +44,7 @@
 
 <div class="container-fluid bg-white min-page-height">
 
+  
   {{ block "main" . }}{{ end }}
 </div>
 <footer>
@@ -53,5 +54,6 @@
 </footer>
 
 {{ partial "scripts.html" . }} 
+
 </body>
 </html>

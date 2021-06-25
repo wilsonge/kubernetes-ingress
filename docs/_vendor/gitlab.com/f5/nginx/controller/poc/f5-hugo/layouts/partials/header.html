@@ -3,7 +3,7 @@
 <div class="navbar navbar-expand navbar-dark flex-column flex-md-row bd-navbar navbar-fixed-top">
   <div class="container flex-md-row flex-column">
     <a class="navbar-brand mr-0 mr-md-2" href="/" aria-label="NGINX Docs">
-      <img class="navbar-img" src="/images/icons/NGINX-Docs-horiz-white-type.svg" alt="NGINX Docs">
+      <img class="navbar-img" src="{{ .Site.BaseURL }}/images/icons/NGINX-Docs-horiz-white-type.svg" alt="NGINX Docs">
     </a>
     <!--button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
       <svg viewBox="0 0 100 80" width="30" height="30">
@@ -12,28 +12,20 @@
         <rect y="60" width="100" height="10"></rect>
       </svg>
     </button-->
-    <div class="navbar-nav-scroll" id="navbarNavScroll">
-      <ul class="navbar-nav flex-row">
-        <li class="nav-item active">
-          <a class="nav-link" href="https://docs.nginx.com/">Home <span class="sr-only">(current)</span></a></li>
-        <li class="nav-item dropdown active">
-          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            Docs
-          </a>
-          {{ partial "products-menu.html" . }}
-        </li>
-        <li class="nav-item active">
-          <a class="nav-link" href="https://www.nginx.com/solutions/" alt="Visit the Solutions page on nginx.com" target="_blank">Solutions</a>
-        </li>
-        <li class="nav-item active">
-          <a class="nav-link" href="https://www.nginx.com/learn/" alt="Visit the Training page on nginx.com" target="_blank">Learn</a>
-        </li>
-        <li class="nav-item active">
-          <a class="nav-link" href="https://www.nginx.com/blog/" alt="Visit the NGINX Blog on nginx.com" target="_blank">NGINX Blog</a>
-        </li>       
-      </ul>
+    <div class="navbar navbar-nav">
+      {{ if ne .Site.Params.buildtype "package"}}
+      <!-- Standalone search box. -->
+      <div id="searchbox">
+        <div class="CoveoAnalytics" data-search-hub="my_main_search_page_search_hub"></div>
+        <div class="CoveoSearchbox" data-placeholder='Search...'></div>
+      </div>
+      {{ end }}
     </div>
 
-    </div>
+    <ul class="navbar navbar-nav">
+        <li class="nav-item active">
+          <button class="button navbar-button"><a href="https://www.nginx.com/products/" alt="Explore all products on nginx.com" target="_blank">Explore All Products</a></button>
+        </li>     
+    </ul>
   </div>
 {{ end }}

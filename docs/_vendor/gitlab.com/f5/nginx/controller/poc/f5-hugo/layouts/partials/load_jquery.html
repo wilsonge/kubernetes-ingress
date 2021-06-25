@@ -11,16 +11,23 @@
 {{/* end */}}
 
 
-{{/* if not .Site.IsServer */}}
+{{ if ne .Site.IsServer "true" }} {{ else if ne .Site.Params.buildtype "package" }} 
 
-  <script type="text/javascript">
-  //some global vars. DO NOT change these variables names. These variables are being used in GTM.
-  var NX_GDPR_FUNCTIONAL_COOKIE_CONSENT = "no"; // possible values are 'yes' and 'no'
-  var NX_GDPR_SOCIAL_COOKIE_CONSENT = "no"; // possible values are 'yes' and 'no'
-  //end global vars
-  </script>
+  {{ $gdprVars := resources.Get "js/gdprVars.js" }}
   {{ $cookie := resources.Get "js/docs-nginx-com/nginx-cookie.js" }}
   {{ $gdpr2 := resources.Get "js/docs-nginx-com/nginx-gdpr2.js" }}
-  <script src="{{ $cookie.RelPermalink }}"></script>
-  <script src="{{ $gdpr2.RelPermalink }}"></script>
-{{/* end */}}
+
+  {{ $secureGdprVars := $gdprVars | minify | fingerprint "sha512" }}
+  {{ $secureCookie := $cookie | minify | fingerprint "sha512" }}
+  {{ $secureGdpr2 := $gdpr2 | minify | fingerprint "sha512" }}
+
+  <script src="{{ $secureGdprVars.RelPermalink }}" integrity="{{ $secureGdprVars.Data.Integrity }}" type="text/javascript"></script>
+  <script src="{{ $secureCookie.RelPermalink }}" integrity="{{ $secureCookie.Data.Integrity }}" type="text/javascript"></script>
+  <script src="{{ $secureGdpr2.RelPermalink }}" integrity="{{ $secureGdpr2.Data.Integrity }}" type="text/javascript"></script>
+{{ end }}
+
+{{ if ne .Site.Params.buildtype "package" }}
+{{ $coveo := resources.Get "js/coveo.js" }}
+{{ $secureCoveo := $coveo | minify | fingerprint "sha512" }}
+<script src="{{ $secureCoveo.RelPermalink }}" integrity="{{ $secureCoveo.Data.Integrity }}" type="text/javascript"></script>
+{{ end }}
