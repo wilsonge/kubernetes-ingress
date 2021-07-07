@@ -6,15 +6,15 @@ document.addEventListener('DOMContentLoaded', function () {
   const searchBoxRoot = document.getElementById("searchbox");
   Coveo.initSearchbox(
     searchBoxRoot,
-    "/search");
+    "/search.html");
 
-  /*var resetbtn = document.querySelector('#reset_btn');
+  var resetbtn = document.querySelector('#reset_btn');
   resetbtn.onclick = function () {
     document.querySelector('.coveo-facet-header-eraser').click();
   };
   Coveo.$$(root).on("querySuccess", function(e, args) {
       resetbtn.style.display="block";
-    });*/
+    });
 
   Coveo.init(root);
 })

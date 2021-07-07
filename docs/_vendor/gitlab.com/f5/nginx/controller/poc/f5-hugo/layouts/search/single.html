@@ -4,7 +4,7 @@
   <main class="col-md-10 content" role="main">
     <div class="container"><h1>{{ .Title}}</h1></div>
     
-    <div id="search" class="CoveoSearchInterface" data-enable-history="true" data-pipeline="QPL_ES_Nginx_Docs_And_Org">
+    <div id="search" class="CoveoSearchInterface" data-enable-history="true">
       <div class="CoveoFolding"></div>
       <div class="CoveoAnalytics" data-search-hub="HUB_ES_Nginx_Docs_And_Org"></div>
       <div class="coveo-search-section" style="display: none;">
@@ -14,7 +14,7 @@
         <div class="coveo-facet-column">
           <div class="CoveoFacet" data-title="Show by product" data-field="@f5_product" data-tab="All"
             data-number-of-values="15"></div>
-          <!--button id="reset_btn"><img src="{{ .Site.BaseURL }}images/refresh.svg">Reset</button-->
+          <button id="reset_btn"><img src="{{ .Site.BaseURL }}images/refresh.svg">Reset</button>
         </div>
         <div class="coveo-results-column">
           <div class="CoveoShareQuery"></div>
@@ -50,7 +50,7 @@
             <script id="Default" class="result-template" type="text/html" data-layout="list">
                   <div class="coveo-result-frame">
                     <div class="coveo-result-cell" style="vertical-align:top;text-align:center;width:32px;">
-                      <img src="https://cdn.f5.com/websites/support/assets/images/icons/icon-manual-bw.svg" alt="Manual" height="32" width="32" title="Manual" />
+                      <img src="{{.Site.BaseURL}}/images/article-icon.svg" alt="Article" height="32" width="32" title="Article" />
                     </div>
                     <div class="coveo-result-cell" style="vertical-align: top;padding-left: 16px;">
                       <div class="coveo-result-row" style="margin:0;">
@@ -58,7 +58,7 @@
                           <a class="CoveoResultLink" target="_blank"></a>
                         </div>
                         <div class="coveo-result-cell" style="width:120px;text-align:right;font-size:12px">
-                          <span class="CoveoQuickview">
+                          <span class="CoveoQuickview" data-enable-loading-animation="false">
                           Quick View
                           </span>
                           <div class="coveo-result-row">

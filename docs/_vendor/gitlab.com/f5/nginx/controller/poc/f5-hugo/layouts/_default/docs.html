@@ -1,13 +1,10 @@
 {{ define "main" }}
 <div class="row flex-xl-nowrap">
-  <nav class="col-md-3 d-none d-xl-block d-print-none lt-gray-border-right">
+  <nav class="sidenav overflow-auto col-md-3 d-none d-xl-block d-print-none lt-gray-border-right">
     {{ partial "sidebar.html" . }}
   </nav>
   
-  <main class="content col-xl-7 .d-block" role="main">
-    {{ if .GitInfo }}
-    <a class="btn btn-sm btn-bd-light my-2 my-md-0" href="#" title="View and edit this file on GitHub" target="_blank" rel="noopener">View on GitHub</a>
-    {{ end }}
+  <main class="content col-xl-6 d-block" role="main">
     
     <h1>{{ .Title }}</h1>
 
@@ -23,7 +20,7 @@
     
   </main>
   {{ if and (gt .WordCount 200 ) (.Params.toc) }}
-  <div class="col-md-2 d-none d-xl-block d-print-none nginx-toc content">
+  <div class="col-md-3 d-none d-xl-block d-print-none nginx-toc content">
   {{ partial "toc.html" . }}
   </div>
   {{ end }}

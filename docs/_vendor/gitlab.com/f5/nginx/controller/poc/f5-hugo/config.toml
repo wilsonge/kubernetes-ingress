@@ -10,88 +10,77 @@
   source="dist/jquery.min.js"
   target="assets/js/jquery.min.js"
 
-ignoreFiles = [ "\\.sh$", "\\.DS_Store$", "\\.git.*$", "\\.txt$"]
-
 [frontmatter]
   lastmod = ["lastmod", ":fileModTime", ":default"]
 
 [menu]
+  # Products menu is not currently in use
   [[menu.products]]
     name = "NGINX Controller"
     weight = 300
     url = "https://docs.nginx.com/nginx-controller/"
     identifier = "NGINX Controller"
-    pre = "<i class='nginx-ctlr'></i>"
+    #pre = "<i class='nginx-ctlr'></i>"
 
   [[menu.products]]
     name = "NGINX Open Source"
     weight = 100
     url = "https://nginx.org/en/docs"
-    post = "<i class='fas fa-external-link-alt fa-xs'></i>"
-    pre = "<i class='nginx-oss'></i>"
+    #post = "<i class='fas fa-external-link-alt fa-xs'></i>"
+    #pre = "<i class='nginx-oss'></i>"
 
   [[menu.products]]
     name = "NGINX Plus"
     weight = 200
     url = "https://docs.nginx.com/nginx/"
     identifier = "NGINX Plus"
-    pre = "<i class='nginx-plus'></i>"
+    #pre = "<i class='nginx-plus'></i>"
 
   [[menu.products]]
     name = "NGINX App Protect WAF"
     weight = 600
     url = "https://docs.nginx.com/nginx-app-protect/"
     identifier = "NGINX App Protect"
-    pre = "<i class='nginx-ap'></i>"
+    #pre = "<i class='nginx-ap'></i>"
 
-  #[[menu.products]]
-  #  name = "NGINX App Protect DoS"
-  #  weight = 500
-  #  url = "https://docs.nginx.com/nginx-app-protect-dos/"
-  #  identifier = "NGINX App Protect DoS"
-  #  pre = "<i class='nginx-apd'></i>"
-  #  post = "<span class='alert'>New!</span>"
+  [[menu.products]]
+    name = "NGINX App Protect DoS"
+    weight = 500
+    url = "https://docs.nginx.com/nginx-app-protect-dos/"
+    identifier = "NGINX App Protect DoS"
+    #pre = "<i class='nginx-apd'></i>"
+    #post = "<span class='alert'>New!</span>"
 
   [[menu.products]]
     name = "NGINX Ingress Controller"
     weight = 700
     url = "https://docs.nginx.com/nginx-ingress-controller/"
     identifier = "NGINX Ingress Controller"
-    post = ""
-    pre = "<i class='nginx-ic'></i>"
+    #post = ""
+    #pre = "<i class='nginx-ic'></i>"
 
   [[menu.products]]
     name = "NGINX Service Mesh"
     weight = 800
     url = "https://docs.nginx.com/nginx-service-mesh/"
     identifier = "NGINX Service Mesh"
-    post = ""
-    pre = "<i class='nginx-sm'></i>"
+    #post = ""
+    #pre = "<i class='nginx-sm'></i>"
 
   [[menu.products]]
     name = "NGINX Instance Manager"
     weight = 400
     url = "https://docs.nginx.com/nginx-instance-manager/"
     identifier = "NGINX Instance Manager"
-    post = ""
-    pre = "<i class='nginx-im'></i>"
-
-  #[[menu.products]]
-  #  name = "NGINX ModSecurity WAF"
-  #  weight = 1000
-  #  url = "/nginx-waf/"
+    #post = ""
+    #pre = "<i class='nginx-im'></i>"
 
   [[menu.products]]
     name = "NGINX Unit"
     weight = 900
     url = "https://unit.nginx.org/"
-    post = "<i class='fas fa-external-link-alt fa-xs'></i>"
-    pre = "<i class='nginx-unit'></i>"
-
-  #[[menu.products]]
-  #  name = "NGINX Amplify"
-  #  weight = 900
-  #  url = "https://amplify.nginx.com/docs/"
+    #post = "<i class='fas fa-external-link-alt fa-xs'></i>"
+    #pre = "<i class='nginx-unit'></i>"
 
 [taxonomies]
   category = "categories"
@@ -121,11 +110,12 @@ ignoreFiles = [ "\\.sh$", "\\.DS_Store$", "\\.git.*$", "\\.txt$", "README\\.md"]
     "taxonomyTerm"
   ]
 
-  [[params.alerts]]
-    active = "false"
+  #Not implemented yet
+  #[[params.alerts]]
+    # active = "false"
     # To add a custom alert to the header, add text below
-    alertText = ""
+    # alertText = ""
     # Define the type of alert below. 
     # Accepted values are primary, secondary, success, danger, warning, info, light, and dark
-    alertType = ""
+    # alertType = ""
   
