@@ -1,10 +1,12 @@
 ---
 title: GlobalConfiguration Resource
+
 description: 
 weight: 100
 doctypes: [""]
 toc: true
 ---
+
 
 The GlobalConfiguration resource allows you to define the global configuration parameters of the Ingress Controller. The resource is implemented as a [Custom Resource](https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/).
 

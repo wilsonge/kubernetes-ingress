@@ -1,10 +1,12 @@
 ---
 title: Status Page
+
 description: 
 weight: 100
 doctypes: [""]
 toc: true
 ---
+
 
 NGINX comes with a status page that reports basic metrics about NGINX called the [stub status](https://nginx.org/en/docs/http/ngx_http_stub_status_module.html). NGINX Plus comes with a [dashboard](https://docs.nginx.com/nginx/admin-guide/monitoring/live-activity-monitoring/) that reports key load-balancing and performance metrics. This doc shows how to get access to the stub status/dashboard.
 

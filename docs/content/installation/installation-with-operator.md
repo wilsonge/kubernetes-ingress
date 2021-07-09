@@ -1,5 +1,6 @@
 ---
 title: Installation with the NGINX Ingress Operator
+
 description: 
 weight: 100
 doctypes: [""]
