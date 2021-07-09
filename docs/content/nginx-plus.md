@@ -1,8 +1,9 @@
 ---
 title: NGINX Ingress Controller with NGINX Plus
+
 description: 
 weight: 100
-doctypes: [""]
+doctypes: ["concept"]
 toc: true
 ---
 

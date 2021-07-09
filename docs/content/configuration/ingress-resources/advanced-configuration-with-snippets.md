@@ -1,10 +1,12 @@
 ---
-title: Advanced Configuration With Snippets
+title: Advanced Configuration with Snippets
+
 description: 
 weight: 100
 doctypes: [""]
 toc: true
 ---
+
 
 Snippets allow you to insert raw NGINX config into different contexts of the NGINX configurations that the Ingress Controller generates. These should be used as a last-resort solution in cases where annotations and ConfigMap entries cannot help. Snippets are intended for advanced NGINX users who need more control over the generated NGINX configuration.
 

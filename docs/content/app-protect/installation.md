@@ -1,5 +1,6 @@
 ---
-title: Install with NGINX App Protect
+title: Install NGINX Ingress Controller with App Protect
+
 description: 
 weight: 100
 doctypes: [""]

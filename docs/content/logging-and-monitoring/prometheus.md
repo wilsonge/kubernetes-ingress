@@ -1,10 +1,12 @@
 ---
 title: Prometheus
+
 description: 
 weight: 100
 doctypes: [""]
 toc: true
 ---
+
 
 The Ingress Controller exposes a number of metrics in the [Prometheus](https://prometheus.io/) format. Those include NGINX/NGINX Plus and the Ingress Controller metrics.
 
