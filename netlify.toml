@@ -1,27 +1,32 @@
 [build]
-  base = "docs/"
-  publish = "public"
-  command = "make hugo build"
-
-[build.environment]
   HUGO_VERSION = "0.80.0"
-
-[context.development]
-  command = "make hugo-build-dev"
-
-[context.staging]
-  command = "make hugo-build-staging"
+  command = "hugo --gc -b $DEPLOY_PRIME_URL/nginx-ingress-controller"
+  publish = "public"
 
 [context.production]
-  command = "make hugo-build-prod"
+  command = "hugo --gc -e production"  
+  publish = "public"
+
+[context.staging]
+  command = "hugo --gc -e staging"
+  publish = "public"
+
+[context.development]
+  command = "hugo --gc -e development"
+  publish = "public"
 
 [context.deploy-preview]
-  command = "make hugo-build-deploy-preview"
+  command = "hugo --gc -b $DEPLOY_PRIME_URL/nginx-ingress-controller"
+  publish = "public"
 
-[[headers]]
-  for = "/*"
-  [headers.values]
-    Access-Control-Allow-Origin = "https://docs.nginx.com"
+[context.branch-deploy]
+  command = "hugo --gc -b $DEPLOY_PRIME_URL/nginx-ingress-controller"
+  publish = "public"
+
+## Branch for development testing
+[context.hugo-theme-dev-test]
+  command = "hugo --gc -b https://docs-dev.nginx.com/nginx-ingress-controller"
+  publish = "public"  
 
 [[redirects]]
   from = "/"
@@ -29,16 +34,25 @@
   status = 301
   force = true
 
-
 [[redirects]]
-  from = "https://nginx-kubernetes-ingress/robots.txt"
-  to = "https://docs.nginx.com/robots.txt"
+  from = "/nginx/directives"
+  to = "https://nginx.org/en/docs/dirindex.html"
   status = 301
   force = true
+
+[[redirects]]
+  from = "/directives"
+  to = "https://nginx.org/en/docs/dirindex.html"
+  status = 301
+  force = true  
 
 [[redirects]]
   from = "*"
   to = "https://docs.nginx.com/404.html"
   status = 404
 
-
+[[redirects]]
+  from = "https://n-plus-public-docs.netlify.app/robots.txt"
+  to = "https://docs.nginx.com/robots.txt"
+  status = 301
+  force = true

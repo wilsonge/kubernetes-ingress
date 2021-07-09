@@ -3,8 +3,11 @@ title: Running Multiple Ingress Controllers
 description: 
 weight: 100
 doctypes: [""]
+aliases:
+    - /multiple-ingress-controllers/
 toc: true
 ---
+
 
 This document explains the following topics:
 * Ingress class concept.

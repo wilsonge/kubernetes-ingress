@@ -1,10 +1,13 @@
 ---
-title: Installation With Manifests
+title: Installation with Manifests
 description: 
 weight: 100
 doctypes: [""]
+aliases:
+    - /installation/
 toc: true
 ---
+
 
 This document describes how to install the NGINX Ingress Controller in your Kubernetes cluster using Kubernetes manifests.
 

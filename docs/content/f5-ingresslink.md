@@ -1,14 +1,11 @@
-<<<<<<< HEAD:docs-web/f5-ingresslink.md
-# F5 IngressLink
-=======
 ---
-title: Integration with F5 Container Ingress Services
+title: F5 IngressLink
 description: 
 weight: 100
-doctypes: [""]
+doctypes: ["concept"]
 toc: true
 ---
->>>>>>> Converted docs files from sphinx format to hugo.:docs/content/integration-with-cis.md
+
 
 F5 IngressLink is the integration between NGINX Ingress Controller and [F5 Container Ingress Services](https://clouddocs.f5.com/containers/v2/) (CIS) that configures an F5 BIG-IP device as a load balancer for NGINX Ingress Controller pods.
 

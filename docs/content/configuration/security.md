@@ -1,4 +1,11 @@
-# Security
+---
+title: Security
+description: 
+weight: 100
+doctypes: [""]
+toc: true
+---
+
 
 The security of the Ingress Controller is paramount to the success of our Users, however, the Ingress Controller is deployed by a User in their environment, and as such, the User takes responsibility 
 for securing a deployment of the Ingress Controller. 

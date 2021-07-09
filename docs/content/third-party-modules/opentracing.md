@@ -1,10 +1,13 @@
 ---
-title: Opentracing
+title: OpenTracing
 description: 
 weight: 100
 doctypes: [""]
+aliases:
+    - /opentracing/
 toc: true
 ---
+
 
 The Ingress Controller supports [OpenTracing](https://opentracing.io/) with the third-party module [opentracing-contrib/nginx-opentracing](https://github.com/opentracing-contrib/nginx-opentracing).
 

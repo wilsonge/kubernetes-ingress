@@ -6,6 +6,7 @@ doctypes: [""]
 toc: true
 ---
 
+
 This document explains how to build an Ingress Controller image. Note that for NGINX, we provide the image though [DockerHub](https://hub.docker.com/r/nginx/nginx-ingress/). For NGINX Plus, you need to build the image.
 
 ## Prerequisites
