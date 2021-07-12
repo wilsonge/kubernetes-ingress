@@ -1,6 +1,5 @@
 ---
 title: Logging
-
 description: 
 weight: 100
 doctypes: [""]

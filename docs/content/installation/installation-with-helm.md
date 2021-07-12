@@ -1,6 +1,5 @@
 ---
 title: Installation with Helm
-
 description: 
 weight: 100
 doctypes: [""]

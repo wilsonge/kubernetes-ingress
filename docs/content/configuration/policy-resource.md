@@ -1,6 +1,5 @@
 ---
 title: Policy Resource
-
 description: 
 weight: 100
 doctypes: [""]

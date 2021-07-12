@@ -1,6 +1,5 @@
 ---
 title: Basic Configuration
-
 description: 
 weight: 100
 doctypes: [""]

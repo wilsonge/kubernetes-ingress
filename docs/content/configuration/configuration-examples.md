@@ -1,6 +1,5 @@
 ---
 title: Configuration Examples
-
 description: 
 weight: 100
 doctypes: [""]

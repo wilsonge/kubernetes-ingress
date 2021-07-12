@@ -1,6 +1,5 @@
 ---
 title: Ingress Controller Command-line Arguments
-
 description: 
 weight: 100
 doctypes: ["concept"]

@@ -1,6 +1,5 @@
 ---
 title: Monitoring the Ingress Controller Using Prometheus
-
 description: 
 weight: 100
 doctypes: ["concept"]

@@ -1,6 +1,5 @@
 ---
 title: Custom Annotations
-
 description: 
 weight: 100
 doctypes: [""]

@@ -1,6 +1,5 @@
 ---
 title: OpenTracing Support
-
 description: 
 weight: 100
 doctypes: ["concept"]

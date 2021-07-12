@@ -1,6 +1,5 @@
 ---
 title: F5 IngressLink
-
 description: 
 weight: 100
 doctypes: ["concept"]

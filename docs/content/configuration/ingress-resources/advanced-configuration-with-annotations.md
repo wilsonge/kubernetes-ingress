@@ -1,6 +1,5 @@
 ---
 title: Advanced Configuration with Annotations
-
 description: 
 weight: 100
 doctypes: [""]

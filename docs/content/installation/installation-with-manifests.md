@@ -1,6 +1,5 @@
 ---
 title: Installation with Manifests
-
 description: 
 weight: 100
 doctypes: [""]
