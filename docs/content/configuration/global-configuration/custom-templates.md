@@ -1,6 +1,5 @@
 ---
 title: Custom Templates
-
 description: 
 weight: 100
 doctypes: [""]

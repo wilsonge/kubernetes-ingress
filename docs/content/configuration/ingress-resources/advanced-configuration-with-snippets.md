@@ -1,6 +1,5 @@
 ---
 title: Advanced Configuration with Snippets
-
 description: 
 weight: 100
 doctypes: [""]

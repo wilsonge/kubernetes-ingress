@@ -1,6 +1,5 @@
 ---
 title: Reporting Status of Ingress Resources
-
 description: 
 weight: 100
 doctypes: ["concept"]

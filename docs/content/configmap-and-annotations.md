@@ -1,6 +1,5 @@
 ---
 title: ConfigMap and Annotations
-
 description: 
 weight: 100
 doctypes: ["concept"]

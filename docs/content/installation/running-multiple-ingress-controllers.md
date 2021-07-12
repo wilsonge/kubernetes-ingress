@@ -1,6 +1,5 @@
 ---
 title: Running Multiple Ingress Controllers
-
 description: 
 weight: 100
 doctypes: [""]

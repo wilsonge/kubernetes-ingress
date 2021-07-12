@@ -1,6 +1,5 @@
 ---
 title: Installing the Ingress Controller
-
 description: 
 weight: 100
 doctypes: ["concept"]

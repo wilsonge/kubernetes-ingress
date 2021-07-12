@@ -1,6 +1,5 @@
 ---
 title: Cross-namespace Configuration
-
 description: 
 weight: 100
 doctypes: [""]

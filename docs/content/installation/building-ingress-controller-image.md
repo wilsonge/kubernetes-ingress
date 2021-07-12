@@ -1,6 +1,5 @@
 ---
 title: Building the Ingress Controller Image
-
 description: 
 weight: 100
 doctypes: [""]

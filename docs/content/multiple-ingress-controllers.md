@@ -1,6 +1,5 @@
 ---
 title: Multiple Ingress Controllers
-
 description: 
 weight: 100
 doctypes: ["concept"]
