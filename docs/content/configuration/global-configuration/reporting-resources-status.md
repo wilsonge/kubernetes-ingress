@@ -3,6 +3,8 @@ title: Reporting Resources Status
 description: 
 weight: 100
 doctypes: [""]
+aliases:
+    - /report-ingress-status/
 toc: true
 ---
 

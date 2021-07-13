@@ -3,6 +3,8 @@ title: OpenTracing
 description: 
 weight: 100
 doctypes: [""]
+aliases:
+    - /opentracing/
 toc: true
 ---
 

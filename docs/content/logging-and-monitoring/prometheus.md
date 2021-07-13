@@ -3,6 +3,8 @@ title: Prometheus
 description: 
 weight: 100
 doctypes: [""]
+aliases:
+    - /prometheus/
 toc: true
 ---
 

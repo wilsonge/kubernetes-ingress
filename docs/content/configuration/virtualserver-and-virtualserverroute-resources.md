@@ -3,6 +3,8 @@ title: VirtualServer and VirtualServerRoute Resources
 description: 
 weight: 100
 doctypes: [""]
+aliases:
+    - /virtualserver-and-virtualserverroute/
 toc: true
 ---
 
