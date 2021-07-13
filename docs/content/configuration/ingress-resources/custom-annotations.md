@@ -3,6 +3,8 @@ title: Custom Annotations
 description: 
 weight: 100
 doctypes: [""]
+aliases:
+    - /custom-annotations/
 toc: true
 ---
 
