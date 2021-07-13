@@ -1,6 +1,5 @@
 ---
 title: NGINX Ingress Controller Technical Specifications
-
 description: 
 weight: 100
 doctypes: ["concept"]

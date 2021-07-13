@@ -1,10 +1,11 @@
 ---
-title: Differences between Ingress Controllers
-description: Differences between Ingress Controllers
+title: Differences Between nginxinc/kubernetes-ingress and kubernetes/ingress-nginx Ingress Controllers
+description: 
 weight: 100
-doctypes: [""]
+doctypes: ["concept"]
 toc: true
 ---
+
 
 There are two NGINX-based Ingress controller implementations out there: the one you can find in this repo (nginxinc/kubernetes-ingress) and the one from [kubernetes/ingress-nginx](https://github.com/kubernetes/ingress-nginx) repo. In this document, we explain the key differences between those implementations. This information should help you to choose an appropriate implementation for your requirements or move from one implementation to the other.
 
@@ -16,7 +17,6 @@ If you are unsure about which implementation you are using, check the container 
 
 The table below summarizes the key difference between nginxinc/kubernetes-ingress and kubernetes/ingress-nginx Ingress controllers. Note that the table has two columns for the nginxinc/kubernetes-ingress Ingress controller, as it can be used both with NGINX and NGINX Plus. For more information about nginxinc/kubernetes-ingress with NGINX Plus, read [here]({{< relref "nginx-plus.md" >}}).
 
-{{% table %}}
 | Aspect or Feature | kubernetes/ingress-nginx | nginxinc/kubernetes-ingress with NGINX | nginxinc/kubernetes-ingress with NGINX Plus |
 | --- | --- | --- | --- |
 | **Fundamental** |
@@ -48,7 +48,6 @@ The table below summarizes the key difference between nginxinc/kubernetes-ingres
 | Extended Status | Supported via a third-party module | Not supported | Supported |
 | Prometheus Integration | Supported | Supported | Supported |
 | Dynamic reconfiguration of endpoints (no configuration reloading) | Supported with a third-party Lua module | Not supported | Supported |
-{{% /table %}}
 
 Notes:
 

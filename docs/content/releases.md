@@ -2,9 +2,10 @@
 title: Releases
 description: 
 weight: 100
-doctypes: [""]
+doctypes: ["concept"]
 toc: true
 ---
+
 
 ## NGINX Ingress Controller 1.12.0
 

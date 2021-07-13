@@ -6,6 +6,7 @@ doctypes: [""]
 toc: true
 ---
 
+
 The example below shows a basic Ingress resource definition. It load balances requests for two services -- coffee and tea -- comprising a hypothetical *cafe* app hosted at `cafe.example.com`:
 ```yaml
 apiVersion: networking.k8s.io/v1beta1
