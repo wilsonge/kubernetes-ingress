@@ -57,6 +57,7 @@ canonifyURLs = true
     "taxonomy",
     "taxonomyTerm"
   ]
+  logo = "NGINX-Ingress-Controller-product-icon.svg"
 
 sectionPagesMenu = "docs"
 
