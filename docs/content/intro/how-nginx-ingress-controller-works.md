@@ -1,7 +1,7 @@
 ---
 title: How NGINX Ingress Controller Works
 description: 
-weight: 100
+weight: 2000
 doctypes: [""]
 toc: true
 ---

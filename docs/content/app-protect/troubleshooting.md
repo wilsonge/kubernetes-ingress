@@ -1,7 +1,7 @@
 ---
 title: Troubleshoot the Ingress Controller with App Protect Integration
 description: 
-weight: 100
+weight: 2000
 doctypes: [""]
 aliases:
     - /troubleshooting/

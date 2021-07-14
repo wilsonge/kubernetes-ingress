@@ -1,7 +1,7 @@
 ---
 title: Differences Between nginxinc/kubernetes-ingress and kubernetes/ingress-nginx Ingress Controllers
 description: 
-weight: 100
+weight: 1700
 doctypes: ["concept"]
 toc: true
 ---

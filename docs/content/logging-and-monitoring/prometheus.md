@@ -1,7 +1,7 @@
 ---
 title: Prometheus
 description: 
-weight: 100
+weight: 2000
 doctypes: [""]
 aliases:
     - /prometheus/

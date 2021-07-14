@@ -1,7 +1,7 @@
 ---
 title: Installation
 description: 
-weight: 100
+weight: 1300
 menu:
   docs:
     parent: NGINX Ingress Controller

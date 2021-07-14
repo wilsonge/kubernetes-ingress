@@ -1,7 +1,7 @@
 ---
 title: Reporting Resources Status
 description: 
-weight: 100
+weight: 1900
 doctypes: [""]
 aliases:
     - /report-ingress-status/

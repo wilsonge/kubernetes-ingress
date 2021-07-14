@@ -1,7 +1,7 @@
 ---
 title: ConfigMap Resource
 description: 
-weight: 100
+weight: 1600
 doctypes: [""]
 toc: true
 ---

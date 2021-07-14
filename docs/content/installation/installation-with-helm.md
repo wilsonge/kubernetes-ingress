@@ -1,7 +1,7 @@
 ---
 title: Installation with Helm
 description: 
-weight: 100
+weight: 1800
 doctypes: [""]
 toc: true
 ---

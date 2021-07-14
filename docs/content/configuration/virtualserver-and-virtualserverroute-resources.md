@@ -1,7 +1,7 @@
 ---
 title: VirtualServer and VirtualServerRoute Resources
 description: 
-weight: 100
+weight: 1600
 doctypes: [""]
 aliases:
     - /virtualserver-and-virtualserverroute/
